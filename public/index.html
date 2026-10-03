@@ -407,6 +407,22 @@ async function cargarSerie() {
     chartDir.update('none');
 }
 
+// Estado de la conexión: se recalcula cada 30 s en el navegador (sin pedir nada al servidor)
+// a partir de la hora real en que el recolector envió el último lote. Como la respuesta
+// del servidor puede venir de la caché, no se puede confiar en un "conectado" precalculado.
+let ultimoRecibidoMs = null;
+function evaluarEstado() {
+    const est = $('estado');
+    if (ultimoRecibidoMs == null) return;
+    const minutos = (Date.now() - ultimoRecibidoMs) / 60000;
+    if (minutos <= INTERVALO_MIN + 5) { est.textContent = '● Conectado'; est.classList.remove('off'); }
+    else {
+        const txt = minutos >= 120 ? Math.round(minutos / 60) + ' h' : Math.round(minutos) + ' min';
+        est.textContent = `● Sin datos nuevos desde hace ${txt}`; est.classList.add('off');
+    }
+}
+setInterval(evaluarEstado, 30000);
+
 async function actualizarVivo() {
     const est = $('estado');
     $('reloj').textContent = new Date().toLocaleTimeString('es-ES');
@@ -421,8 +437,8 @@ async function actualizarVivo() {
         $('vel_std').textContent = fmt(d.Velviento_Std);
         $('flechaDir').style.transform = `rotate(${d.Direccion_D1_WVT}deg)`;
         $('ultima').textContent = d.Fecha;
-        if (d.enlace) { est.textContent = '● Conectado'; est.classList.remove('off'); }
-        else { est.textContent = `● Sin datos nuevos de la estación (último: ${d.Fecha})`; est.classList.add('off'); }
+        ultimoRecibidoMs = Number(d.recibido_ms);
+        evaluarEstado();
     } catch (e) { est.textContent = '● Sin conexión con el servidor'; est.classList.add('off'); }
 }
 
