@@ -21,7 +21,7 @@
 - `GET /api/serie?min=180` – datos minuto a minuto para las gráficas
 - `GET /api/datos?pagina=1&por_pagina=20&horas=0` – tabla paginada (horas=0: todo)
 - `GET /api/resumen?horas=24` – estadísticas para el informe PDF
-- `GET /api/export?horas=0` – descarga CSV (abre en Excel)
+- `GET /api/export?horas=0` – descarga Excel (.xlsx); `?formato=csv` como respaldo
 
 La página es pública. Si quieres restringirla, activa **Deployment Protection** en Vercel
 (ojo: las rutas `/api/ingest/*` también quedarían protegidas; usa "Standard Protection" o
