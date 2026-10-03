@@ -7,7 +7,8 @@ export default async function handler(req, res) {
       `SELECT fecha AS "Fecha", record AS "Record", velviento_s_wvt AS "Velviento_S_WVT",
               direccion_d1_wvt AS "Direccion_D1_WVT", direccion_sd1_wvt AS "Direccion_SD1_WVT",
               velviento_max AS "Velviento_Max", velviento_std AS "Velviento_Std",
-              EXTRACT(EPOCH FROM (now() - recibido))::int AS hace_seg
+              EXTRACT(EPOCH FROM (now() - recibido))::int AS hace_seg,
+              (EXTRACT(EPOCH FROM recibido) * 1000)::bigint AS recibido_ms
        FROM vivo WHERE id = 1`);
     res.setHeader("Cache-Control", CACHE);
     if (!r) return res.status(200).json({});
